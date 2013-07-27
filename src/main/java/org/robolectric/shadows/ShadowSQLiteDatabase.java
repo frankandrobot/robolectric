@@ -12,6 +12,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
+import android.os.CancellationSignal;
+
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -316,10 +318,22 @@ public class ShadowSQLiteDatabase extends ShadowSQLiteClosable {
     }
   }
 
-
   @Implementation
   public Cursor rawQuery (String sql, String[] selectionArgs) {
     return rawQueryWithFactory(DEFAULT_CURSOR_FACTORY, sql, selectionArgs, null );
+  }
+
+  @Implementation
+  public Cursor rawQueryWithFactory (SQLiteDatabase.CursorFactory cursorFactory,
+                                     String sql,
+                                     String[] selectionArgs,
+                                     String editTable,
+                                     CancellationSignal cancellationSignal)
+  {
+      return rawQueryWithFactory(cursorFactory,
+                                 sql,
+                                 selectionArgs,
+                                 editTable);
   }
 
   @Implementation
@@ -449,6 +463,7 @@ public class ShadowSQLiteDatabase extends ShadowSQLiteClosable {
       unlock();
     }
   }
+
 
   /**
    * @param closable
